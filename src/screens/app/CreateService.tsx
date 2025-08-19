@@ -31,6 +31,7 @@ import {
 import { useCreateService } from "@src/api/hooks/mutation/app";
 import { useIsFocused } from "@react-navigation/native";
 import { AntDesign } from "@expo/vector-icons";
+import { showFlashMsg } from "@src/helper/ui-utils";
 
 export const CreateService = ({
   navigation,
@@ -46,7 +47,7 @@ export const CreateService = ({
   const [arrImgResult, setArrImgResult] = useState<ImagePickerResult[] | null>(
     []
   );
-  const [fields, setFields] = useState([{ title: "", value: "" }]);
+  const [fields, setFields] = useState<any[]>([{ title: "", value: "" }]);
   const {
     handleSubmit,
     control,
@@ -59,11 +60,13 @@ export const CreateService = ({
   });
 
   const handleAddField = () => {
-    setFields((prev) => [...prev, { title: "", value: "" }]);
+    setFields((prev: any) => [...prev, { title: "", value: "" }]);
   };
 
   const handleRemoveField = (index: number) => {
-    const updatedFields = fields.filter((__, fieldIdx) => fieldIdx !== index);
+    const updatedFields = fields.filter(
+      (__: any, fieldIdx: number) => fieldIdx !== index
+    );
     setFields(updatedFields);
   };
 
@@ -82,6 +85,7 @@ export const CreateService = ({
     if (isSuccess) {
       reset();
       setArrImgResult(null);
+      setFields([{ title: "", value: "" }]);
     }
   }, [isSuccess]);
 
@@ -324,7 +328,7 @@ export const CreateService = ({
           />
 
           <View style={{ flex: 1 }}>
-            {fields.map((field, index) => (
+            {fields.map((field: any, index: number) => (
               <View
                 key={index}
                 style={{
@@ -359,31 +363,33 @@ export const CreateService = ({
                     style={styles.input}
                   />
                 </View>
-                <CustomButton
-                  lightBlack
-                  textWhite
-                  buttonType='Solid'
-                  textSize={16}
-                  textType='medium'
-                  onPress={() => {
-                    handleRemoveField(index);
-                  }}
-                  btnStyle={[
-                    styles.addBtn,
-                    {
-                      width: "10%",
-                      paddingLeft: moderateScale(10),
-                      marginTop: moderateScale(25),
-                    },
-                  ]}
-                  leftIcon={
-                    <AntDesign
-                      name='delete'
-                      size={moderateScale(15)}
-                      color={colors.white}
-                    />
-                  }
-                />
+                {index !== 0 && (
+                  <CustomButton
+                    lightBlack
+                    textWhite
+                    buttonType='Solid'
+                    textSize={16}
+                    textType='medium'
+                    onPress={() => {
+                      handleRemoveField(index);
+                    }}
+                    btnStyle={[
+                      styles.addBtn,
+                      {
+                        width: "10%",
+                        paddingLeft: moderateScale(10),
+                        marginTop: moderateScale(25),
+                      },
+                    ]}
+                    leftIcon={
+                      <AntDesign
+                        name='delete'
+                        size={moderateScale(15)}
+                        color={colors.white}
+                      />
+                    }
+                  />
+                )}
               </View>
             ))}
 
@@ -428,7 +434,13 @@ export const CreateService = ({
             textSize={16}
             textType='medium'
             onPress={handleSubmit(onSubmit, (data) => {
-              console.log(data);
+              if (data?.description?.message) {
+                showFlashMsg({
+                  msgType: "ERROR",
+                  title: "Error",
+                  description: "Title and Value is empty",
+                });
+              }
             })}
             btnStyle={styles.createServiceBtn}
             isLoading={isPending}

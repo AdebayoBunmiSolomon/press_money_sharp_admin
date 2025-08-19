@@ -91,7 +91,11 @@ export const createService = async (
   if (!isNetworkConnectedAndReachable) {
     throw new Error("No internet connection. Please try again later.");
   }
+
   try {
+    let body: any = payload;
+
+    // If images are included, switch to FormData
     if (payload.image_file) {
       const formData = new FormData();
       formData.append("category", payload.category);
@@ -106,8 +110,8 @@ export const createService = async (
       formData.append("description", payload.description);
       formData.append("status", payload.status);
       formData.append("location", payload.location);
-      // Append multiple images
-      if (payload.image_file && Array.isArray(payload.image_file)) {
+
+      if (Array.isArray(payload.image_file)) {
         payload.image_file.forEach((img) => {
           const imgVal = getImgExtNType(img?.name);
 
@@ -118,20 +122,21 @@ export const createService = async (
           } as any);
         });
       }
-      const { data, status } = await APIRequest.POST(
-        endpoint.ADMIN.createService,
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token.trim()}`,
-          },
-        }
-      );
-      return { data, status }; // Return response instead of throwing an error
+
+      body = formData;
     }
+    // Use your FETCH wrapper
+    const { data, status } = await APIRequest.FETCH({
+      endpoint: endpoint.ADMIN.createService,
+      method: "POST",
+      body,
+      token,
+    });
+
+    return { data, status };
   } catch (err: any) {
     console.log("Create-Service service error:", err);
-    return { error: err.message || "An error occurred" }; // Return error as part of response
+    return { error: err.message || "An error occurred" };
   }
 };
 

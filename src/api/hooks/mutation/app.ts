@@ -44,6 +44,7 @@ export const useCreateService = () => {
     mutationFn: (payload: apiCreateService) =>
       createService(payload, userData?.token),
     onSuccess: (response) => {
+      console.log("Make API call 2", response);
       APIRequest.RESPONSE_HANDLER({
         type: "flash",
         status: response?.data?.success ? 200 : 401, //200 | 401 | 500
@@ -375,21 +376,6 @@ export const useSendChatMessage = (receiver_uuid: string) => {
         userData?.token,
         receiver_uuid
       ),
-    onSuccess: (response, variables) => {
-      const { service } = variables;
-      // const service_uuid = service;
-      // if (response?.data?.success) {
-      //   queryClient.invalidateQueries({
-      //     queryKey: [appQueryKeys.GET_USER_SERVICE_MESSAGES, service_uuid],
-      //   });
-      //   queryClient.invalidateQueries({
-      //     queryKey: [appQueryKeys.GET_USER_NOTIFICATIONS, userData?.uuid],
-      //   });
-      //   queryClient.invalidateQueries({
-      //     queryKey: [appQueryKeys.GET_ALL_USER_CHATS, userData?.token],
-      //   });
-      // }
-    },
     onError: (error) => {
       APIRequest.RESPONSE_HANDLER({
         status: 500,
