@@ -440,6 +440,15 @@ export const CreateService = ({
                   title: "Error",
                   description: "Title and Value is empty",
                 });
+                return;
+              }
+              if (data?.image_file?.message) {
+                showFlashMsg({
+                  msgType: "ERROR",
+                  title: "Error",
+                  description: "Image is not selected",
+                });
+                return;
               }
             })}
             btnStyle={styles.createServiceBtn}
@@ -457,11 +466,7 @@ export const CreateService = ({
         visible={fileUploadVisible}
         onClose={() => setFileUploadVisible(!fileUploadVisible)}
         onClickGallery={async () => {
-          const arrImgRes = await pickMultipleFromGallery({
-            maxImages: 4, // Allow up to 8 images
-            minImages: 4, // Require at least 4 images
-            quality: 0.3, // Slightly higher quality
-          });
+          const arrImgRes = await pickMultipleFromGallery();
           if (arrImgRes) {
             setFileUploadVisible(!fileUploadVisible);
             setArrImgResult(arrImgRes);

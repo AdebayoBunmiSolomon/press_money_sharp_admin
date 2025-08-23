@@ -17,6 +17,7 @@ interface IFileUploadModalProps {
   onClickGallery: () => void;
   onClickCamera?: () => void;
   noCamera?: boolean;
+  loading?: boolean;
 }
 
 export const FileUploadModal: React.FC<IFileUploadModalProps> = ({
@@ -25,6 +26,7 @@ export const FileUploadModal: React.FC<IFileUploadModalProps> = ({
   onClickCamera,
   onClickGallery,
   noCamera = true,
+  loading,
 }) => {
   return (
     <View>
@@ -65,6 +67,8 @@ export const FileUploadModal: React.FC<IFileUploadModalProps> = ({
                     color={colors.red}
                   />
                 }
+                loaderColor={colors.red}
+                isLoading={loading}
               />
               {!noCamera && (
                 <CustomButton
@@ -82,6 +86,8 @@ export const FileUploadModal: React.FC<IFileUploadModalProps> = ({
                       color={colors.white}
                     />
                   }
+                  loaderColor={colors.white}
+                  isLoading={loading}
                 />
               )}
             </View>

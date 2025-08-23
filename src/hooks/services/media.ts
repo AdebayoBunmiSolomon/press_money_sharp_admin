@@ -288,7 +288,7 @@ export const useMedia = (): UseImagePickerReturn => {
     }
   };
 
-  // Pick multiple images from gallery (minimum 4)
+  // Pick multiple images from gallery (up to 4)
   const pickMultipleFromGallery = async (
     options: MultipleImagePickerOptions = {}
   ): Promise<ImagePickerResult[] | null> => {
@@ -307,9 +307,8 @@ export const useMedia = (): UseImagePickerReturn => {
 
       const mergedOptions = { ...defaultMultipleOptions, ...options };
 
-      // Ensure minimum is at least 4 as requested
-      const minImages = Math.max(mergedOptions.minImages || 4, 4);
-      const maxImages = mergedOptions.maxImages || 10;
+      // ✅ only allow up to 4 images
+      const maxImages = mergedOptions.maxImages || 4;
 
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ["images"],
@@ -317,19 +316,11 @@ export const useMedia = (): UseImagePickerReturn => {
         quality: mergedOptions.quality,
         exif: false,
         base64: false,
-        selectionLimit: maxImages, // Allow multiple selection
-        allowsMultipleSelection: true, // Enable multiple selection
+        selectionLimit: maxImages, // user can pick 1–4 images
+        allowsMultipleSelection: true,
       });
 
       const processedResults = processMultipleImageResults(result);
-
-      if (processedResults && processedResults.length < minImages) {
-        Alert.alert(
-          "Insufficient Images",
-          `Please select at least ${minImages} images. You selected ${processedResults.length}.`
-        );
-        return null;
-      }
 
       if (processedResults && processedResults.length > maxImages) {
         Alert.alert(
